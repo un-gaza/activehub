@@ -1,13 +1,12 @@
 {
-  "source": "https://www.facebook.com/61584343468666/",
-  "reference_post": "https://www.facebook.com/61584343468666/posts/122142383565144782/",
-  "instagram": "https://www.instagram.com/active_hub62/",
-  "asset": "active-hub-logo.jpg",
+  "source": "User-approved original artwork attached on 2026-10-21",
+  "original_filename": "Active Hub Gold Logo Banner.png",
+  "asset": "active-hub-approved.png",
   "dimensions": [
-    720,
-    720
+    2172,
+    724
   ],
-  "note": "Original public Facebook profile image. Display framing uses CSS; image is unmodified.",
+  "note": "Original file copied without modification. Full horizontal image displayed with object-fit: contain. Receipt display uses CSS grayscale.",
   "palette": {
     "gold": "#f0a020",
     "logo_gray": "#585858",

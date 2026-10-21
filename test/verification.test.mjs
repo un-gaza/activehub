@@ -20,7 +20,7 @@ test('complete operating workflow: roles, discounts, services, stock, expenses, 
   const a=await request('login',{username:'admin',password:creds.admin});const v=await request('login',{username:'viewer',password:creds.viewer});
   assert.equal(a.status,200);assert.equal(v.status,200);
   for(const path of ['customers','products','stock','sales','payments','refunds','void','expenses','settings','password'])assert.equal((await request(path,{},v.cookie)).status,403,`viewer cannot modify ${path}`);
-  for(const path of ['/','/admin','/app.js','/style.css','/fonts/Cairo-Variable.ttf','/images/active-hub-logo.jpg'])assert.equal((await fetch(origin+path)).status,200,path);
+  for(const path of ['/','/admin','/app.js','/style.css','/fonts/Cairo-Variable.ttf','/images/active-hub-approved.png'])assert.equal((await fetch(origin+path)).status,200,path);
   for(const path of ['/data/initial-credentials.json','/data/activehub.sqlite','/server.mjs'])assert.equal((await fetch(origin+path)).status,404,path);
   assert.equal((await request('customers',{name:'عميل التحقق',phone:'0590000000',notes:'بيانات معزولة'},a.cookie)).status,200);
   assert.equal((await request('products',{name:'مشروب تجريبي',price:12.5,cost:4.25,stock:20,minimum:3,service:false},a.cookie)).status,200);
@@ -51,7 +51,7 @@ test('complete operating workflow: roles, discounts, services, stock, expenses, 
   const nodes={'#print':output,'#print-preview':preview,'#preview-size':{},'#preview-paper':{},'#paper-measure':{}};
   const context=vm.createContext({crypto:{randomUUID},document:{addEventListener(){},querySelector:s=>nodes[s]||null},window:{print(){prints++;}}});
   vm.runInContext(source+`\nuser={username:'viewer',role:'viewer'};data=${JSON.stringify(d)};globalThis.report=views.reports();globalThis.viewerInvoices=views.invoices();printInvoice(${sold.body.invoice_id});`,context);
-  assert.ok(output.innerHTML.includes('فاتورة AH-00001'));assert.ok(output.innerHTML.includes('مشروب تجريبي'));assert.ok(output.innerHTML.includes('المدفوع عند البيع'));assert.ok(output.innerHTML.includes('/images/active-hub-logo.jpg'));assert.ok(output.innerHTML.includes('22.50'));assert.ok(!/[٠-٩۰-۹]/.test(output.innerHTML));
+  assert.ok(output.innerHTML.includes('فاتورة AH-00001'));assert.ok(output.innerHTML.includes('مشروب تجريبي'));assert.ok(output.innerHTML.includes('المدفوع عند البيع'));assert.ok(output.innerHTML.includes('/images/active-hub-approved.png'));assert.ok(output.innerHTML.includes('22.50'));assert.ok(!/[٠-٩۰-۹]/.test(output.innerHTML));
   vm.runInContext('statement(1)',context);assert.ok(output.innerHTML.includes('كشف حساب'));assert.ok(output.innerHTML.includes('RC-2'));assert.ok(output.innerHTML.includes('الرصيد النهائي: 0.00'));
   vm.runInContext(`receipt(${paid.body.payment_id})`,context);assert.ok(output.innerHTML.includes('إيصال قبض'));assert.ok(output.innerHTML.includes('جوال باي'));assert.equal(prints,0);assert.equal(previews,1);assert.equal(preview.open,true);
   assert.ok(context.report.includes('33.00'));assert.ok(context.report.includes('15.25'));assert.ok(!context.viewerInvoices.includes('data-action="void"'));

@@ -341,8 +341,8 @@ const server = http.createServer(async (req, res) => {
     }
     const fonts = new Set(['Cairo-Variable.ttf', 'Cairo-OFL.txt', 'IBMPlexSansArabic-Regular.ttf', 'IBMPlexSansArabic-Medium.ttf', 'IBMPlexSansArabic-SemiBold.ttf', 'IBMPlexSansArabic-Bold.ttf', 'OFL.txt']);
     const font = url.pathname.startsWith('/fonts/') && fonts.has(url.pathname.slice(7)) ? url.pathname.slice(7) : null;
-    const image = url.pathname === '/images/active-hub-logo.jpg';
-    const file = image ? 'images/active-hub-logo.jpg' : font ? 'fonts/' + font : url.pathname === '/app.js' ? 'app.js' : url.pathname === '/style.css' ? 'style.css' : url.pathname === '/theme.css' ? 'theme.css' : url.pathname === '/' || url.pathname === '/admin' ? 'index.html' : null;
+    const image = ['/images/active-hub-approved.png','/images/active-hub-logo.jpg'].includes(url.pathname);
+    const file = image ? url.pathname.slice(1) : font ? 'fonts/' + font : url.pathname === '/app.js' ? 'app.js' : url.pathname === '/style.css' ? 'style.css' : url.pathname === '/theme.css' ? 'theme.css' : url.pathname === '/' || url.pathname === '/admin' ? 'index.html' : null;
     if (!file) fail('غير موجود', 404);
     const content = readFileSync(new URL('./public/' + file, import.meta.url));
     res.writeHead(200, {
@@ -352,6 +352,7 @@ const server = http.createServer(async (req, res) => {
         '.js': 'text/javascript; charset=utf-8',
         '.ttf': 'font/ttf',
         '.jpg': 'image/jpeg',
+        '.png': 'image/png',
         '.txt': 'text/plain; charset=utf-8'
       })[extname(file)],
       ...font || image ? {
