@@ -1,0 +1,12 @@
+data/
+.env
+.env.*
+!.env.example
+.vercel/
+.netlify/
+.local/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+node_modules/
+*.log
