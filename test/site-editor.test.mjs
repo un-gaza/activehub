@@ -29,6 +29,14 @@ test('page rendering escapes content, honors hidden/reordered sections and uses 
  assert.ok(html.includes('&lt;script&gt;'));assert.ok(!html.includes('<script>'));assert.ok(!html.includes('id="services"'));assert.ok(html.indexOf('id="contact"')<html.indexOf('id="about"'));assert.ok(html.includes('https://wa.me/972599876261'));assert.ok(html.includes('A &lt; B'));
  const bad=initialSite(seed);bad.hero.url='javascript:alert(1)';assert.throws(()=>validateSite(bad));bad.hero.url='#contact';bad.identity.logo='https://unknown.example/image.svg';assert.throws(()=>validateSite(bad));bad.identity.logo='/images/active-hub-approved.png';bad.sections[0].id='contact';assert.throws(()=>validateSite(bad));
 });
+test('visitor redesign hides empty sections and their links, retains custom copy, and separates contact content',()=>{
+ const context=vm.createContext({document:{addEventListener(){}},window:{addEventListener(){}}});vm.runInContext(readFileSync('public/site.js','utf8')+'\nglobalThis.renderer=SitePage;',context);
+ const d=initialSite(seed);let html=context.renderer.render(d);
+ assert.ok(!html.includes('id="gallery"'));assert.ok(!html.includes('href="#gallery"'));assert.ok(html.includes('visitor-contact-intro'));assert.ok(html.includes('visitor-contact-card'));assert.ok(html.includes('visitor-service-icon'));
+ d.services[0].text='Custom <service> copy';d.gallery=[{title:'Our space',image:'/images/active-hub-approved.png'}];html=context.renderer.render(d);
+ assert.ok(html.includes('Custom &lt;service&gt; copy'));assert.ok(html.includes('id="gallery"'));assert.ok(html.includes('href="#gallery"'));
+ d.sections.find(s=>s.id==='gallery').visible=false;html=context.renderer.render(d);assert.ok(!html.includes('href="#gallery"'));assert.ok(!html.includes('id="gallery"'));
+});
 test('CMS endpoints protect drafts, publish live content, persist image uploads, and enforce administrator role',async()=>{
  const dir=mkdtempSync(resolve(tmpdir(),'hub-cms-http-')),port=43000+Math.floor(Math.random()*8000);const child=spawn(process.execPath,['server.mjs'],{env:{...process.env,DATA_DIR:dir,PORT:String(port)},stdio:['ignore','pipe','pipe']});let cookie;
  const api=async(path,body,session=cookie)=>{const res=await fetch(`http://127.0.0.1:${port}/api/${path}`,{method:body?'POST':'GET',headers:{...(body?{'Content-Type':'application/json'}:{}),...(session?{Cookie:session}:{})},body:body?JSON.stringify(body):undefined});return {status:res.status,body:await res.json(),cookie:res.headers.get('set-cookie')?.split(';')[0]};};
