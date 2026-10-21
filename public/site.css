@@ -2,3 +2,15 @@
 @font-face{font-family:"IBM Plex Sans Arabic";font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/IBMPlexSansArabic-Regular.ttf') format('truetype')}@font-face{font-family:"IBM Plex Sans Arabic";font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/IBMPlexSansArabic-Bold.ttf') format('truetype')}.site-managed .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.site-managed .eyebrow,.site-managed .text-link{color:var(--site-accent)}.site-managed .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
 .site-managed .public-header .brand{flex:0 0 auto;background:transparent;border:0;border-radius:0;box-shadow:none;transform:none;animation:none}
 .site-managed .public-header .brand img{display:block;width:clamp(170px,19vw,225px);height:auto;aspect-ratio:3/1;object-fit:contain;background:transparent;border:0;border-radius:0;box-shadow:none;filter:drop-shadow(0 3px 5px #0005) drop-shadow(0 0 5px #ffd24a1a);transform:none;animation:none;transition:none}
+.site-managed{color-scheme:light}
+.site-managed .primary{border-color:var(--site-accent);box-shadow:0 6px 18px color-mix(in srgb,var(--site-accent) 18%,transparent)}
+.site-managed .primary:hover{background:color-mix(in srgb,var(--site-accent) 85%,#fff);border-color:var(--site-accent);color:#101010}
+.site-managed .secondary:hover{background:color-mix(in srgb,var(--site-accent) 10%,var(--site-bg));border-color:var(--site-accent);color:var(--site-text)}
+.site-managed .public-header{border-color:color-mix(in srgb,var(--site-text) 12%,transparent);box-shadow:0 8px 28px color-mix(in srgb,var(--site-text) 5%,transparent)}
+.site-managed .public-header nav a:hover{color:var(--site-text)}
+.site-managed .public-header nav a:after{background:var(--site-accent)}
+.site-managed .eyebrow,.site-managed .text-link{color:color-mix(in srgb,var(--site-accent) 65%,var(--site-text))}
+.site-managed .site-section:nth-child(even){background:color-mix(in srgb,var(--site-accent) 4%,var(--site-bg))}
+.site-managed .service-grid article{background:var(--site-bg);border-color:color-mix(in srgb,var(--site-text) 12%,transparent);box-shadow:0 8px 30px color-mix(in srgb,var(--site-text) 4%,transparent);border-radius:18px}
+.site-managed footer,.site-managed .mobile-bottom-nav,.site-managed .mobile-install-button{border-color:color-mix(in srgb,var(--site-text) 15%,transparent)}
+.site-managed .developer-contact>span{color:color-mix(in srgb,var(--site-text) 75%,var(--site-bg))}
