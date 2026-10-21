@@ -35,9 +35,11 @@
 .site-managed .primary::after{content:"";position:absolute;inset-block:-60%;inset-inline-start:-90%;width:45%;background:linear-gradient(110deg,transparent,#ffffff70,transparent);transform:skewX(-20deg);animation:hub-button-sheen 9s ease-in-out infinite;pointer-events:none}
 .site-managed .public-header::after{content:"";position:absolute;inset-inline:10%;bottom:0;height:1px;background:linear-gradient(90deg,transparent,var(--site-accent),#ffe7a0,var(--site-accent),transparent);background-size:250% 100%;animation:hub-header-glint 10s ease-in-out infinite;pointer-events:none}
 @media(hover:hover) and (pointer:fine){
- .site-managed .service-grid article:hover{transform:translateY(-5px);border-color:color-mix(in srgb,var(--site-accent) 65%,transparent);box-shadow:0 16px 38px color-mix(in srgb,var(--site-accent) 14%,transparent)}
- .site-managed .primary:hover,.site-managed .secondary:hover,.site-managed .mobile-install-button:hover{transform:translateY(-2px);box-shadow:0 8px 24px color-mix(in srgb,var(--site-accent) 24%,transparent)}
+ .site-managed .service-grid article:hover{transform:none;border-color:var(--site-accent);box-shadow:0 0 0 1px color-mix(in srgb,var(--site-accent) 35%,transparent),0 0 20px color-mix(in srgb,var(--site-accent) 30%,transparent),0 0 52px color-mix(in srgb,var(--site-accent) 17%,transparent)}
+ .site-managed .primary:hover,.site-managed .secondary:hover,.site-managed .mobile-install-button:hover{transform:none;border-color:var(--site-accent);box-shadow:0 0 0 1px color-mix(in srgb,var(--site-accent) 45%,transparent),0 0 16px color-mix(in srgb,var(--site-accent) 40%,transparent),0 0 36px color-mix(in srgb,var(--site-accent) 22%,transparent)}
 }
+.site-managed .primary:focus-visible,.site-managed .secondary:focus-visible,.site-managed .mobile-install-button:focus-visible,.site-managed .service-grid article:focus-within{border-color:var(--site-accent);box-shadow:0 0 0 1px color-mix(in srgb,var(--site-accent) 35%,transparent),0 0 20px color-mix(in srgb,var(--site-accent) 30%,transparent),0 0 44px color-mix(in srgb,var(--site-accent) 18%,transparent)}
+@media(hover:none){.site-managed .primary:active,.site-managed .secondary:active,.site-managed .mobile-install-button:active{box-shadow:0 0 16px color-mix(in srgb,var(--site-accent) 40%,transparent),0 0 32px color-mix(in srgb,var(--site-accent) 22%,transparent)}}
 .site-managed .primary:focus-visible,.site-managed .secondary:focus-visible,.site-managed .mobile-install-button:focus-visible{outline:2px solid var(--site-text);outline-offset:4px}
 @keyframes hub-gold-orbit{to{--hub-gold-angle:360deg}}
 @keyframes hub-button-sheen{0%,72%{inset-inline-start:-90%;opacity:0}75%{opacity:1}90%,100%{inset-inline-start:150%;opacity:0}}
