@@ -14,10 +14,13 @@ test('deleting and restoring invoices preserves the ledger; customers with balan
  try{
   await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('server timeout')),10000);child.stdout.on('data',s=>{if(s.toString().includes('http://')){clearTimeout(timer);resolve();}});child.once('exit',()=>{clearTimeout(timer);reject(Error('server exited'));});});
   const creds=JSON.parse(readFileSync(resolve(dir,'initial-credentials.json'),'utf8'));cookie=(await api('login',{username:'admin',password:creds.admin})).cookie;const viewer=(await api('login',{username:'viewer',password:creds.viewer})).cookie;
-  for(const entity of ['customer','invoice'])for(const action of ['delete','restore'])assert.equal((await api(action+'/'+entity,{id:1},viewer)).status,403);
+  for(const entity of ['customer','invoice','payment'])for(const action of ['delete','restore'])assert.equal((await api(action+'/'+entity,{id:1},viewer)).status,403);
   await api('customers',{name:'عميل الحذف',phone:'0590000000',notes:''});await api('products',{name:'صنف تجريبي',price:5,cost:2,stock:10,minimum:2,service:false});
   await api('sales',{key:randomUUID(),customer_id:1,items:[{id:1,quantity:2}],paid:4,method:'cash'});
   const initial=(await api('data')).body;assert.equal(initial.customers[0].balance,600);assert.equal(initial.products[0].stock,8);
+  assert.equal((await api('delete/payment',{id:1})).status,200);assert.equal((await api('delete/payment',{id:1})).status,200);
+  const archivedPayment=(await api('data')).body;assert.equal(archivedPayment.payments[0].deleted,1);assert.equal(archivedPayment.payments[0].amount,400);assert.equal(archivedPayment.payments[0].status,'active');assert.equal(archivedPayment.customers[0].balance,600);assert.equal(archivedPayment.invoices[0].paid,400);
+  assert.equal((await api('restore/payment',{id:1})).status,200);assert.equal((await api('data')).body.payments[0].deleted,0);assert.equal((await api('delete/payment',{id:999})).status,404);
   assert.equal((await api('delete/customer',{id:1})).status,409);assert.equal((await api('delete/invoice',{id:1})).status,200);assert.equal((await api('delete/invoice',{id:1})).status,200);
   let d=(await api('data')).body;assert.equal(d.invoices[0].deleted,1);assert.equal(d.invoices[0].status,'active');assert.equal(d.invoices[0].total,1000);assert.equal(d.payments[0].status,'active');assert.equal(d.customers[0].balance,600);assert.equal(d.products[0].stock,8);
   assert.equal((await api('restore/invoice',{id:1})).status,200);assert.equal((await api('data')).body.invoices[0].deleted,0);

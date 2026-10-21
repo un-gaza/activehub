@@ -20,5 +20,8 @@ test('PostgreSQL adapter handles seeded prices, atomic concurrent checkout, bala
   const id=d.customers[0].id;assert.equal((await api('payments',{key:randomUUID(),customer_id:id,amount:5,method:'palpay'})).status,200);
   assert.equal((await api('delete/customer',{id})).status,200);assert.equal((await api('restore/customer',{id})).status,200);
   d=(await api('data')).body;assert.equal(d.customers[0].balance,0);assert.equal(d.invoices[0].items[0].price,350);
+  const payment=d.payments[0];assert.equal((await api('delete/payment',{id:payment.id})).status,200);
+  d=(await api('data')).body;assert.equal(d.payments.find(p=>p.id===payment.id).deleted,1);assert.equal(d.customers[0].balance,0);
+  assert.equal((await api('restore/payment',{id:payment.id})).status,200);assert.equal((await api('data')).body.payments.find(p=>p.id===payment.id).deleted,0);
  }finally{await new Promise(r=>{if(child.exitCode!==null)return r();child.once('exit',r);child.kill();});rmSync(dir,{recursive:true,force:true});}
 });

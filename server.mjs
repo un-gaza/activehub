@@ -193,9 +193,9 @@ const server = http.createServer(async (req, res) => {
         });
       }
       const result = await transaction(async () => {
-        if ((/^\/api\/(delete|restore)\/(customer|invoice)$/).test(url.pathname)) {
-          const [, operation, entity] = url.pathname.match(/^\/api\/(delete|restore)\/(customer|invoice)$/);
-          const table = entity === 'customer' ? 'customers' : 'invoices';
+        if ((/^\/api\/(delete|restore)\/(customer|invoice|payment)$/).test(url.pathname)) {
+          const [, operation, entity] = url.pathname.match(/^\/api\/(delete|restore)\/(customer|invoice|payment)$/);
+          const table = {customer:'customers',invoice:'invoices',payment:'payments'}[entity];
           const id = integer(b.id, 1);
           const record = await one(`SELECT * FROM ${table} WHERE id=?`, id);
           if (!record) fail('السجل غير موجود', 404);
@@ -205,7 +205,7 @@ const server = http.createServer(async (req, res) => {
           };
           if (entity === 'customer' && deleted && await balance(id) !== 0) fail('لا يمكن حذف العميل قبل تسوية رصيده المستحق أو الرصيد لصالحه', 409);
           await run(`UPDATE ${table} SET deleted=? WHERE id=?`, deleted, id);
-          await audit((deleted ? 'نقل إلى المحذوفات: ' : 'استعادة: ') + (entity === 'customer' ? 'العميل ' + record.name : 'الفاتورة #' + id), user);
+          await audit((deleted ? 'نقل إلى المحذوفات: ' : 'استعادة: ') + (entity === 'customer' ? 'العميل ' + record.name : entity==='payment'?'الدفعة RC-'+id:'الفاتورة #' + id), user);
         } else if (url.pathname === '/api/customers') {
           const name = required(b.name);
           if (b.id) {
