@@ -14,3 +14,38 @@
 .site-managed .service-grid article{background:var(--site-bg);border-color:color-mix(in srgb,var(--site-text) 12%,transparent);box-shadow:0 8px 30px color-mix(in srgb,var(--site-text) 4%,transparent);border-radius:18px}
 .site-managed footer,.site-managed .mobile-bottom-nav,.site-managed .mobile-install-button{border-color:color-mix(in srgb,var(--site-text) 15%,transparent)}
 .site-managed .developer-contact>span{color:color-mix(in srgb,var(--site-text) 75%,var(--site-bg))}
+/* Gold accents are confined to the visitor page, including its draft preview. */
+@property --hub-gold-angle{syntax:"<angle>";initial-value:0deg;inherits:false}
+.site-managed{isolation:isolate}
+.site-managed::before{content:"";position:fixed;inset:8px;z-index:36;border:1px solid color-mix(in srgb,var(--site-accent) 24%,transparent);border-radius:22px;pointer-events:none}
+.site-managed .hero{background:radial-gradient(ellipse at 88% 15%,color-mix(in srgb,var(--site-accent) 9%,transparent),transparent 58%)}
+.site-managed .service-grid article,.site-managed .primary,.site-managed .secondary,.site-managed .mobile-install-button{position:relative;isolation:isolate}
+.site-managed .service-grid article{transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease}
+.site-managed .primary,.site-managed .secondary,.site-managed .mobile-install-button{overflow:hidden;transition:background-color .25s ease,box-shadow .25s ease,border-color .25s ease,transform .25s ease}
+/* The mask confines the travelling highlight to a thin ring around each element. */
+@supports (mask-composite:exclude) or (-webkit-mask-composite:xor){
+ .site-managed::before,.site-managed .service-grid article::before,.site-managed .primary::before,.site-managed .secondary::before,.site-managed .mobile-install-button::before{content:"";padding:1.5px;border:0;background:conic-gradient(from var(--hub-gold-angle),transparent 0deg,color-mix(in srgb,var(--site-accent) 16%,transparent) 60deg,var(--site-accent) 95deg,#ffe7a0 115deg,var(--site-accent) 135deg,transparent 180deg,transparent 260deg,color-mix(in srgb,var(--site-accent) 55%,transparent) 300deg,transparent 350deg);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:hub-gold-orbit 12s linear infinite;pointer-events:none}
+ .site-managed .service-grid article::before,.site-managed .primary::before,.site-managed .secondary::before,.site-managed .mobile-install-button::before{position:absolute;inset:-1px;border-radius:inherit;z-index:1}
+ .site-managed::before{animation-duration:22s;opacity:.65}
+ .site-managed .service-grid article:nth-child(2n)::before{animation-delay:-4s}
+ .site-managed .service-grid article:nth-child(3n)::before{animation-delay:-8s}
+ .site-managed .primary::before{animation-duration:7s}
+ .site-managed .secondary::before,.site-managed .mobile-install-button::before{opacity:.65;animation-duration:14s}
+}
+.site-managed .primary::after{content:"";position:absolute;inset-block:-60%;inset-inline-start:-90%;width:45%;background:linear-gradient(110deg,transparent,#ffffff70,transparent);transform:skewX(-20deg);animation:hub-button-sheen 9s ease-in-out infinite;pointer-events:none}
+.site-managed .public-header::after{content:"";position:absolute;inset-inline:10%;bottom:0;height:1px;background:linear-gradient(90deg,transparent,var(--site-accent),#ffe7a0,var(--site-accent),transparent);background-size:250% 100%;animation:hub-header-glint 10s ease-in-out infinite;pointer-events:none}
+@media(hover:hover) and (pointer:fine){
+ .site-managed .service-grid article:hover{transform:translateY(-5px);border-color:color-mix(in srgb,var(--site-accent) 65%,transparent);box-shadow:0 16px 38px color-mix(in srgb,var(--site-accent) 14%,transparent)}
+ .site-managed .primary:hover,.site-managed .secondary:hover,.site-managed .mobile-install-button:hover{transform:translateY(-2px);box-shadow:0 8px 24px color-mix(in srgb,var(--site-accent) 24%,transparent)}
+}
+.site-managed .primary:focus-visible,.site-managed .secondary:focus-visible,.site-managed .mobile-install-button:focus-visible{outline:2px solid var(--site-text);outline-offset:4px}
+@keyframes hub-gold-orbit{to{--hub-gold-angle:360deg}}
+@keyframes hub-button-sheen{0%,72%{inset-inline-start:-90%;opacity:0}75%{opacity:1}90%,100%{inset-inline-start:150%;opacity:0}}
+@keyframes hub-header-glint{0%,100%{background-position:0% 50%;opacity:.45}50%{background-position:100% 50%;opacity:1}}
+@media(max-width:700px){.site-managed::before{inset:3px;border-radius:15px;opacity:.4}.site-managed .service-grid article::before{animation-duration:16s}.site-managed .primary::after{animation-duration:12s}}
+@media(prefers-reduced-motion:reduce){
+ .site-managed::before,.site-managed .service-grid article::before,.site-managed .primary::before,.site-managed .secondary::before,.site-managed .mobile-install-button::before,.site-managed .primary::after,.site-managed .public-header::after{animation:none!important}
+ .site-managed .primary::after{display:none}.site-managed .service-grid article,.site-managed .primary,.site-managed .secondary,.site-managed .mobile-install-button{transition:none!important}
+ .site-managed .service-grid article:hover,.site-managed .primary:hover,.site-managed .secondary:hover,.site-managed .mobile-install-button:hover{transform:none}
+}
+@media print{.site-managed::before,.site-managed .service-grid article::before,.site-managed .primary::before,.site-managed .secondary::before,.site-managed .mobile-install-button::before,.site-managed .primary::after,.site-managed .public-header::after{display:none!important}}
