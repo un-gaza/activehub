@@ -361,7 +361,7 @@ const server = http.createServer(async (req, res) => {
     }
     const fonts = new Set(['Cairo-Variable.ttf', 'Cairo-OFL.txt', 'IBMPlexSansArabic-Regular.ttf', 'IBMPlexSansArabic-Medium.ttf', 'IBMPlexSansArabic-SemiBold.ttf', 'IBMPlexSansArabic-Bold.ttf', 'OFL.txt']);
     const font = url.pathname.startsWith('/fonts/') && fonts.has(url.pathname.slice(7)) ? url.pathname.slice(7) : null;
-    const image = ['/images/active-hub-approved.png','/images/active-hub-logo.jpg'].includes(url.pathname);
+    const image = ['/images/active-hub-approved.png','/images/active-hub-transparent.png','/images/active-hub-logo.jpg'].includes(url.pathname);
     const siteAsset=['/site.js','/site.css'].includes(url.pathname);
     const file = siteAsset?url.pathname.slice(1):image ? url.pathname.slice(1) : font ? 'fonts/' + font : url.pathname === '/app.js' ? 'app.js' : url.pathname === '/style.css' ? 'style.css' : url.pathname === '/theme.css' ? 'theme.css' : url.pathname === '/' || url.pathname === '/admin' ? 'index.html' : null;
     if (!file) fail('غير موجود', 404);
