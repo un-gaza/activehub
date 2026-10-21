@@ -1,0 +1,15 @@
+{
+  "id":"/",
+  "name":"ACTIVE HUB أكتيف هب",
+  "short_name":"Active Hub",
+  "description":"مساحة عمل أكتيف هب وإدارة المبيعات والحسابات",
+  "lang":"ar",
+  "dir":"rtl",
+  "start_url":"/admin",
+  "scope":"/",
+  "display":"standalone",
+  "background_color":"#101010",
+  "theme_color":"#101010",
+  "icons":[{"src":"/images/app-icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}],
+  "shortcuts":[{"name":"لوحة الإدارة","url":"/admin"},{"name":"صفحة الزوار","url":"/"}]
+}

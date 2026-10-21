@@ -40,6 +40,7 @@ test('CMS endpoints protect drafts, publish live content, persist image uploads,
   const png=readFileSync('public/images/active-hub-approved.png');assert.ok(png.length<2000000);const uploaded=await api('site/upload',{content:png.toString('base64')});assert.equal(uploaded.status,200);const image=await fetch(`http://127.0.0.1:${port}${uploaded.body.url}`);assert.equal(image.headers.get('content-type'),'image/png');assert.deepEqual(Buffer.from(await image.arrayBuffer()),png);
   assert.equal((await api('site/upload',{content:Buffer.from('<svg onload="alert(1)"></svg>').toString('base64')})).status,400);
   editor.draft.hero.image=uploaded.body.url;assert.equal((await api('site/publish',{document:editor.draft,revision:editor.revision})).status,200);assert.equal((await api('public')).body.site.hero.title,'New published heading');
-  for(const path of ['site.js','site.css'])assert.equal((await fetch(`http://127.0.0.1:${port}/${path}`)).status,200);
+  for(const path of ['site.js','site.css','mobile.js','mobile.css','images/app-icon.svg'])assert.equal((await fetch(`http://127.0.0.1:${port}/${path}`)).status,200);
+  const manifest=await fetch(`http://127.0.0.1:${port}/manifest.webmanifest`);assert.equal(manifest.status,200);assert.ok(manifest.headers.get('content-type').includes('application/manifest+json'));assert.equal((await manifest.json()).display,'standalone');
  }finally{child.kill();await new Promise(r=>child.once('exit',r));rmSync(dir,{recursive:true,force:true});}
 });
