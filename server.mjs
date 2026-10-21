@@ -1,5 +1,6 @@
 import http from 'node:http';
 import {createStorage} from './lib/storage.mjs';
+import {approvedBusiness} from './lib/business.mjs';
 import {randomBytes, scryptSync, timingSafeEqual} from 'node:crypto';
 import {mkdirSync, readFileSync, writeFileSync, readdirSync, unlinkSync} from 'node:fs';
 import {resolve, extname} from 'node:path';
@@ -73,12 +74,14 @@ if (!await one('SELECT id FROM users LIMIT 1')) {
   console.log('Initial credentials saved locally in data/initial-credentials.json');
 }
 const defaults = {
-  name: 'Active Hub',
+  name: approvedBusiness.name,
   tagline: 'مساحتك للتركيز. وجهتك للإنجاز.',
   description: 'مساحة عمل مشتركة في غزة، تجمع المستقلين والطلاب وفرق العمل في بيئة تساعد على التركيز والتواصل.',
-  phone: '',
-  address: 'غزة — يرجى اعتماد العنوان من الإدارة',
-  hours: 'تواصل معنا لمعرفة أوقات العمل',
+  phone: approvedBusiness.phone,
+  address: approvedBusiness.address,
+  hours: approvedBusiness.hours,
+  facebook: approvedBusiness.facebook,
+  instagram: approvedBusiness.instagram,
   services: 'مساحات عمل مريحة\nخدمات الإنترنت والطاقة\nالمشروبات والضيافة\nخدمات مالية ورقمية — للاستفسار تواصل معنا',
   currency: '₪'
 };
@@ -330,6 +333,7 @@ const server = http.createServer(async (req, res) => {
           await run('INSERT INTO expenses(title,amount,created,actor) VALUES(?,?,?,?)', required(b.title), amount, now(), user.username);
           await audit('مصروف: ' + b.title, user);
         } else if (url.pathname === '/api/settings') {
+          for(const key of ['facebook','instagram'])if(b[key]){let parsed;try{parsed=new URL(b[key]);}catch{fail('رابط التواصل غير صالح');}const hosts=key==='facebook'?['facebook.com','www.facebook.com','m.facebook.com']:['instagram.com','www.instagram.com'];if(parsed.protocol!=='https:'||!hosts.includes(parsed.hostname)||parsed.username||parsed.password)fail('استخدم رابط '+key+' الرسمي بصيغة HTTPS');}
           for (const k of Object.keys(defaults)) if ((k in b)) await run('UPDATE settings SET value=? WHERE key=?', str(b[k], 3000), k);
           await audit('تحديث بيانات الموقع', user);
         } else fail('المسار غير موجود', 404);
