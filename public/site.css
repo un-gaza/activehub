@@ -51,3 +51,36 @@
  .site-managed .service-grid article:hover,.site-managed .primary:hover,.site-managed .secondary:hover,.site-managed .mobile-install-button:hover{transform:none}
 }
 @media print{.site-managed::before,.site-managed .service-grid article::before,.site-managed .primary::before,.site-managed .secondary::before,.site-managed .mobile-install-button::before,.site-managed .primary::after,.site-managed .public-header::after{display:none!important}}
+/* A complete visitor palette prevents the admin's orange theme bleeding through. */
+.site-managed{--brand-primary:#202126;--brand-hover:#303137;--brand-accent:var(--site-accent);--paper:var(--site-bg);--ink:var(--site-text);--muted:color-mix(in srgb,var(--site-text) 64%,var(--site-bg));--line:color-mix(in srgb,var(--site-text) 12%,var(--site-bg));--white:var(--site-bg);--orange:var(--site-accent)}
+.site-managed::before{display:none}
+.site-managed .public-header{background:#191a1e;color:#f5f4f0;border:1px solid #ffffff14;box-shadow:0 8px 28px #12131814}
+.site-managed .public-header nav{color:#e5e3dd}
+.site-managed .public-header nav a{color:inherit}
+.site-managed .public-header nav a:hover{color:#edcb6d}
+.site-managed .public-header>.secondary{background:#ffffff08;color:#f6e2a0;border:1px solid #d6aa2666}
+.site-managed .public-header>.secondary:hover{background:#d6aa261a;color:#ffeab1;border-color:var(--site-accent)}
+.site-managed .public-header .brand img{filter:drop-shadow(0 1px 2px #0003)}
+.site-managed .hero{background:radial-gradient(ellipse at 85% 35%,color-mix(in srgb,var(--site-accent) 5%,transparent),transparent 65%)}
+.site-managed .hero p,.site-managed .site-section>p,.site-managed .service-grid p{color:var(--muted)}
+.site-managed .hero h1,.site-managed .site-section h2,.site-managed .service-grid h3{color:var(--site-text)}
+.site-managed .site-hero-image{display:flex;align-items:center;justify-content:center;min-width:0;padding:30px;border-radius:24px;background:radial-gradient(ellipse at 50% 45%,#353024 0%,#1c1d21 65%);border:1px solid #d6aa2633;box-shadow:0 18px 45px #1717170d}
+.site-managed .site-hero-image img{border-radius:0}
+.site-managed .site-section:nth-child(even){background:color-mix(in srgb,var(--site-text) 2%,var(--site-bg))}
+.site-managed .about{border-block:1px solid var(--line)}
+.site-managed .service-grid article{border-color:var(--line);box-shadow:0 4px 18px #17171705}
+.site-managed .primary{background:var(--site-accent);border-color:var(--site-accent);color:#191a1e;box-shadow:0 4px 12px color-mix(in srgb,var(--site-accent) 13%,transparent)}
+.site-managed .primary:hover{background:color-mix(in srgb,var(--site-accent) 90%,#fff);color:#191a1e}
+.site-managed .service-grid article::before{opacity:.3}
+.site-managed .primary::before,.site-managed .secondary::before,.site-managed .mobile-install-button::before{opacity:.45}
+.site-managed .primary::after{opacity:.2;animation:none}
+.site-managed .public-header::after{opacity:.4;animation:none}
+.site-managed footer{background:#191a1e;color:#eeece5;border-color:#ffffff14}
+.site-managed footer .developer-contact>span{color:#b9b7ae}
+.site-managed footer .developer-contact a{display:grid;place-items:center;width:36px;height:36px;border:1px solid #ffffff26;border-radius:10px;color:#ead18b;background:#ffffff05}
+.site-managed footer .developer-contact a:hover{background:#d6aa261a;border-color:#d6aa2677}
+.site-managed footer .mobile-install-button{color:#f0deab;border-color:#d6aa2655;background:#ffffff05}
+@media(hover:hover) and (pointer:fine){
+ .site-managed .service-grid article:hover{border-color:color-mix(in srgb,var(--site-accent) 65%,var(--site-bg));box-shadow:0 0 0 1px color-mix(in srgb,var(--site-accent) 12%,transparent),0 0 20px color-mix(in srgb,var(--site-accent) 18%,transparent),0 8px 28px color-mix(in srgb,var(--site-accent) 8%,transparent)}
+ .site-managed .primary:hover,.site-managed .secondary:hover,.site-managed .mobile-install-button:hover{box-shadow:0 0 15px color-mix(in srgb,var(--site-accent) 27%,transparent),0 0 28px color-mix(in srgb,var(--site-accent) 12%,transparent)}
+}

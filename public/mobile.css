@@ -11,3 +11,5 @@
 @keyframes mobile-sheet-enter{from{transform:translateY(35px);opacity:0}to{transform:translateY(0);opacity:1}}
 @media(prefers-reduced-motion:reduce){#mobile-sheet{animation:none}html{scroll-behavior:auto}}
 @media print{.mobile-bottom-nav,#mobile-sheet,#connection-status,.mobile-install-button{display:none!important}}
+/* Keep the branded header consistent with the desktop visitor palette. */
+@media screen and (max-width:700px){.site-managed .public-header{background:#191a1e;color:#f5f4f0;border-bottom-color:#ffffff14}.site-managed .site-hero-image{padding:24px;border-radius:20px}.site-managed .mobile-bottom-nav{border-top-color:color-mix(in srgb,var(--site-text) 12%,transparent);box-shadow:0 -4px 20px #17171708}}
