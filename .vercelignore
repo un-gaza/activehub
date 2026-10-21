@@ -1,0 +1,14 @@
+# Deployment contains source and public assets, never local credentials or data.
+.git/
+.vscode/
+.local/
+.netlify/
+.env
+.env.*
+data/
+node_modules/
+test/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.log

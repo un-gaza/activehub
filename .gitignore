@@ -10,3 +10,6 @@ data/
 *.sqlite-shm
 node_modules/
 *.log
+
+.vercel
+.env*

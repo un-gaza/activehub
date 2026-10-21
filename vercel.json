@@ -1,6 +1,7 @@
 {
   "$schema":"https://openapi.vercel.sh/vercel.json",
   "version":2,
+  "regions":["fra1"],
   "buildCommand":"node --check server.mjs && node --check public/app.js",
   "outputDirectory":"public",
   "functions":{"api/index.mjs":{"maxDuration":60,"includeFiles":"db/schema.sql"}},
