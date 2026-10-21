@@ -1,6 +1,7 @@
 import http from 'node:http';
 import {createStorage} from './lib/storage.mjs';
 import {approvedBusiness} from './lib/business.mjs';
+import {createSiteStore} from './lib/visitor-site.mjs';
 import {randomBytes, scryptSync, timingSafeEqual} from 'node:crypto';
 import {mkdirSync, readFileSync, writeFileSync, readdirSync, unlinkSync} from 'node:fs';
 import {resolve, extname} from 'node:path';
@@ -87,6 +88,7 @@ const defaults = {
 };
 for (const [k, v] of Object.entries(defaults)) await run('INSERT OR IGNORE INTO settings VALUES(?,?)', k, v);
 const settings = async () => Object.fromEntries((await all('SELECT * FROM settings')).map(x => [x.key, x.value]));
+const siteStore=createSiteStore(storage,settings);
 async function snapshot() {
   return {
     settings: await settings(),
@@ -107,11 +109,12 @@ async function snapshot() {
 }
 const attempts = new Map();
 async function body(req) {
-  if(req.body!==undefined){const value=typeof req.body==='string'?JSON.parse(req.body):req.body;if(!value||typeof value!=='object'||Array.isArray(value))fail('طلب غير صالح');if(JSON.stringify(value).length>100000)fail('الطلب كبير جداً');return value;}
+  const limit=req.url?.split('?')[0]==='/api/site/upload'?2800000:100000;
+  if(req.body!==undefined){const value=typeof req.body==='string'?JSON.parse(req.body):req.body;if(!value||typeof value!=='object'||Array.isArray(value))fail('طلب غير صالح');if(Buffer.byteLength(JSON.stringify(value))>limit)fail('الطلب كبير جداً');return value;}
   const chunks=[];let size=0;
   for await (const chunk of req) {
     chunks.push(Buffer.from(chunk));size+=chunk.length;
-    if (size > 100000) fail('الطلب كبير جداً');
+    if (size > limit) fail('الطلب كبير جداً');
   }
   try {
     return JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}');
@@ -136,7 +139,12 @@ const server = http.createServer(async (req, res) => {
   try {
     if (url.pathname.startsWith('/api/')) {
       if (req.method !== 'GET' && req.headers.origin && req.headers.origin !== `${secure ? 'https' : 'http'}://${req.headers.host}`) fail('مصدر الطلب غير مسموح', 403);
-      if (url.pathname === '/api/public' && req.method === 'GET') return json(await settings());
+      if (url.pathname === '/api/public' && req.method === 'GET') return json({...await settings(),site:await siteStore.published()});
+      if (/^\/api\/site-media\/[a-f0-9]{32}$/.test(url.pathname)&&req.method==='GET') {
+        const media=await one('SELECT * FROM site_media WHERE id=?',url.pathname.split('/').pop());
+        if(!media)fail('الصورة غير موجودة',404);
+        res.writeHead(200,{'Content-Type':media.mime,'Cache-Control':'public, max-age=31536000, immutable'});return res.end(Buffer.from(media.content,'base64'));
+      }
       if (url.pathname === '/api/login' && req.method === 'POST') {
         const key = req.socket.remoteAddress;
         let a = attempts.get(key);
@@ -177,9 +185,17 @@ const server = http.createServer(async (req, res) => {
         });
       }
       if (url.pathname === '/api/data' && req.method === 'GET') return json(await snapshot());
+      if(url.pathname==='/api/site/editor'&&req.method==='GET'){if(user.role!=='admin')fail('هذا الحساب للمشاهدة فقط',403);return json(await siteStore.editor());}
       if (req.method !== 'POST') fail('المسار غير موجود', 404);
       if (user.role !== 'admin') fail('هذا الحساب للمشاهدة فقط', 403);
       const b = await body(req);
+      if(/^\/api\/site\/(draft|publish|discard|restore)$/.test(url.pathname))return json(await transaction(async()=>{const result=await siteStore.write(url.pathname.split('/').pop(),b,user);await audit('إدارة صفحة الزوار: '+url.pathname.split('/').pop(),user);return result;}));
+      if(url.pathname==='/api/site/upload'){
+        const bytes=Buffer.from(typeof b.content==='string'?b.content:'','base64');
+        const mime=bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))?'image/png':bytes[0]===255&&bytes[1]===216&&bytes[2]===255?'image/jpeg':bytes.toString('ascii',0,4)==='RIFF'&&bytes.toString('ascii',8,12)==='WEBP'?'image/webp':null;
+        if(!mime||bytes.length>2000000||bytes.length<20)fail('ارفع صورة PNG أو JPEG أو WebP بحجم أقصى 2 MB');
+        const id=randomBytes(16).toString('hex');await run('INSERT INTO site_media(id,mime,content) VALUES(?,?,?)',id,mime,bytes.toString('base64'));return json({url:'/api/site-media/'+id});
+      }
       if (url.pathname === '/api/password') {
         const target = await one('SELECT * FROM users WHERE username=?', str(b.username, 40));
         if (!target) fail('الحساب غير موجود');
@@ -346,7 +362,8 @@ const server = http.createServer(async (req, res) => {
     const fonts = new Set(['Cairo-Variable.ttf', 'Cairo-OFL.txt', 'IBMPlexSansArabic-Regular.ttf', 'IBMPlexSansArabic-Medium.ttf', 'IBMPlexSansArabic-SemiBold.ttf', 'IBMPlexSansArabic-Bold.ttf', 'OFL.txt']);
     const font = url.pathname.startsWith('/fonts/') && fonts.has(url.pathname.slice(7)) ? url.pathname.slice(7) : null;
     const image = ['/images/active-hub-approved.png','/images/active-hub-logo.jpg'].includes(url.pathname);
-    const file = image ? url.pathname.slice(1) : font ? 'fonts/' + font : url.pathname === '/app.js' ? 'app.js' : url.pathname === '/style.css' ? 'style.css' : url.pathname === '/theme.css' ? 'theme.css' : url.pathname === '/' || url.pathname === '/admin' ? 'index.html' : null;
+    const siteAsset=['/site.js','/site.css'].includes(url.pathname);
+    const file = siteAsset?url.pathname.slice(1):image ? url.pathname.slice(1) : font ? 'fonts/' + font : url.pathname === '/app.js' ? 'app.js' : url.pathname === '/style.css' ? 'style.css' : url.pathname === '/theme.css' ? 'theme.css' : url.pathname === '/' || url.pathname === '/admin' ? 'index.html' : null;
     if (!file) fail('غير موجود', 404);
     const content = readFileSync(new URL('./public/' + file, import.meta.url));
     res.writeHead(200, {
